@@ -1,0 +1,8 @@
+﻿@model List<SelectListItem>;
+
+<div class="col-9">
+    <select class="form-control" id="projects" asp-items="@Model" onchange="testChange(event)">
+    </select>
+</div>
+
+<div class="col-3" id="isComplete"></div>

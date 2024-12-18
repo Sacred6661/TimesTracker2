@@ -1,0 +1,183 @@
+﻿
+
+<div class="text-center">
+    <h1 class="display-4">Project Tracker</h1>
+    <div class="form-group">
+        <label for="exampleInputEmail1">Project</label>
+        <div id="projects" class="row mb-3"></div>
+    </div>
+    <div class="col-2">
+        <button class="btn btn-primary mb-3" onclick="$('#addProject').modal('show');">Add Project</button>
+    </div>
+    <div id="fullInfo"></div>
+    <div id="info"></div>
+</div>
+
+
+<div class="modal" id="addProject" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Project</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <span>Project Name</span>
+                <input type="text" id="projectAddName" />
+            </div>
+            <div class="modal-body">
+                <span>Begin date</span>
+                <input type="datetime" id="beginDate" />
+            </div>
+            <div class="modal-body">
+                <span>End date</span>
+                <input type="datetime" id="endDate" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary addTime" onclick="addProject()">Add Project</button>
+                <button type="button" class="btn btn-secondary close" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function addProject() {
+        const projectName = $("#projectAddName").val();
+        const beginDateString = $("#beginDate").val();
+        const endDateString = $("#endDate").val();
+
+        console.log(Date(endDate));
+
+        $.post("/tracker/AddProject",
+            {
+                ProjectName: projectName,
+                DateStartedString: beginDateString,
+                DateEndString: endDateString
+            },
+            function (data, status) {
+               window.location.reload();
+                $("#projects").load("/Tracker/GetProjects");
+
+            });
+
+        $("#projects").load("/Tracker/GetProjects");
+        $("#projectAddName").val("");
+        $("#beginDate").val("");
+        $("#endDate").val("");
+        $("#addProject .close").click();
+        window.location.reload();
+    }
+
+    function addTrackingTime() {
+        //("tTest");
+        const project = $('#projects').find(":selected").val();
+        const projectName = $("#projectName").val();
+        const projectTime = $("#projectTime").val();
+
+        if (projectTime < 15) {
+            alert("Project time shold be more than 15");
+            return;
+        }
+
+        const endTime = new Date($('#endDatePrj').val());
+        const dateNow = new Date();
+        if (dateNow > endTime) {
+            alert("There is end time date");
+            return;
+        }
+
+        console.log("test");
+        $.post("/tracker/AddTrackingTime",
+            {
+                TimeTrackerName: projectName,
+                TakenTime: projectTime,
+                ProjectId: project
+            },
+            function (data, status) {
+                //alert("Data: " + data + "\nStatus: " + status);
+                //window.location.reload();
+                testChange();
+
+            });
+        //$("#projects").load("/Tracker/GetProjects");
+        $("#projectName").val("");
+        $("#projectTime").val("");
+        $("#myModal .close").click();
+        testChange();
+    }
+
+    function testChange(event) {
+        var test = $('#projects').find(":selected").val();
+
+        $("#fullInfo").load("/Tracker/GetProjectInfo?projectId=" + test);
+    }
+
+    $("#projects").load("/Tracker/GetProjects");
+
+    function removeProject() {
+        //("tTest");
+        const project = $('#projects').find(":selected").val();
+            console.log(project);
+
+        $.post("/tracker/RemoveProject",
+            {
+                ProjectId: project,
+            },
+            function (data, status) {
+                //alert("Data: " + data + "\nStatus: " + status);
+                window.location.reload();
+            });
+        $("#projects").load("/Tracker/GetProjects");
+        $("#removeProject .close").click();
+    }
+
+    function completeProject() {
+        //("tTest");
+        const project = $('#projects').find(":selected").val();
+
+        
+
+        $.post("/tracker/CompleteProject",
+            {
+                ProjectId: project,
+            },
+            function (data, status) {
+               // window.location.reload();
+                //alert("Data: " + data + "\nStatus: " + status);
+                testChange();
+            });
+        testChange();
+        //$("#projects").load("/Tracker/GetProjects");
+        $("#completeProject .close").click();
+        //window.location.reload();
+
+    }
+
+
+    function removeProject() {
+        //("tTest");
+        const project = $('#projects').find(":selected").val();
+
+        $.post("/tracker/RemoveProject",
+            {
+                ProjectId: project,
+            },
+            function (data, status) {
+                //alert("Data: " + data + "\nStatus: " + status);
+                window.location.reload();
+            });
+        $("#projects").load("/Tracker/GetProjects");
+        $("#removeProject .close").click();
+        window.location.reload();
+
+    }
+
+
+
+    
+
+</script>
